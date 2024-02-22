@@ -49,7 +49,7 @@ Contributions are welcome! If you would like to contribute to this project, plea
 
 - [ ] Improve eml file naming
 - [x] Add args
-- [ ] Make zipping optional
+- [x] Make zipping optional
 - [ ] Write tests
 - [ ] Skip downloaded mail
 

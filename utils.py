@@ -53,3 +53,24 @@ def create_backup_folder(email, folder_name, backup_folder="backups"):
     storage_name = os.path.join(backup_folder, email, folder_name)
     os.makedirs(storage_name, exist_ok=True)
     return storage_name
+
+
+# For Python 3.4 or earlier, https://note.nkmk.me/en/python-os-path-getsize/
+def get_dir_size(path='.'):
+    """
+    Recursively calculates the total size of a directory and its contents.
+
+    Args:
+        path (str, optional): Directory path to calculate size for. Defaults to '.'.
+
+    Returns:
+        int: Total size of the directory in bytes.
+    """
+    total = 0
+    with os.scandir(path) as it:
+        for entry in it:
+            if entry.is_file():
+                total += entry.stat().st_size
+            elif entry.is_dir():
+                total += get_dir_size(entry.path)
+    return total

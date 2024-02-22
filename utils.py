@@ -74,3 +74,21 @@ def get_dir_size(path='.'):
             elif entry.is_dir():
                 total += get_dir_size(entry.path)
     return total
+
+
+def zip_files(path, zipf):
+    """
+    Recursively adds files from a directory to a ZipFile object.
+
+    Args:
+        path (str): Path of the directory to zip.
+        zipf (ZipFile): ZipFile object to add files to.
+
+    Returns:
+        None
+    """
+    for root, dirs, files in os.walk(path):
+        folder = root[len(path):]  # path without "parent"
+        for file in files:
+            zipf.write(os.path.join(root, file), os.path.join(folder, file))
+

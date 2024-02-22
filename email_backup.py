@@ -118,9 +118,9 @@ class EmailBackup:
             os.makedirs(self.backup_folder)
 
         if self.max_zip_size is not None and get_dir_size(f'{self.backup_folder}/{email}') > self.max_zip_size:
-            zip_into_part(f'{email}', self.max_zip_size, self.backup_folder)
+            zip_into_part(f'{self.backup_folder}/{email}', self.max_zip_size, self.backup_folder)
             print(f'\r\n! Saving parts on {self.backup_folder}/{email}/')
         else:
             with zipfile.ZipFile(f'{self.backup_folder}/{email}.zip', 'w', zipfile.ZIP_DEFLATED) as zipf:
-                zip_files(f'{email}', zipf)
+                zip_files(f'{self.backup_folder}/{email}', zipf)
                 print(f'\r\n! Saving as {self.backup_folder}/{email}.zip')

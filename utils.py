@@ -35,3 +35,21 @@ def get_accounts(start_dir=".", filename="accounts.csv"):
     else:
         print("No accounts.csv file found in the specified directory.")
     return None
+
+
+def create_backup_folder(email, folder_name, backup_folder="backups"):
+    """
+    Creates a local backup folder for storing email backups.
+
+    Args:
+        email (str): Email address.
+        folder_name (str): Name of the mailbox folder.
+        backup_folder (str, optional): Root directory for storing backups. Defaults to "backups".
+
+    Returns:
+        str: Path to the created backup folder.
+    """
+    folder_name = folder_name.replace('INBOX.', '').capitalize()
+    storage_name = os.path.join(backup_folder, email, folder_name)
+    os.makedirs(storage_name, exist_ok=True)
+    return storage_name

@@ -2,6 +2,7 @@ import imaplib
 import os
 
 from tqdm import tqdm
+from utils import create_backup_folder
 
 
 class EmailBackup:
@@ -39,23 +40,6 @@ class EmailBackup:
             list: List of mailbox folders.
         """
         return self.imap_conn.list()[1]
-
-    def create_backup_folder(self, email, folder_name, backup_folder="backups"):
-        """
-        Creates a local backup folder for storing email backups.
-
-        Args:
-            email (str): Email address.
-            folder_name (str): Name of the mailbox folder.
-            backup_folder (str, optional): Root directory for storing backups. Defaults to "backups".
-
-        Returns:
-            str: Path to the created backup folder.
-        """
-        folder_name = folder_name.replace('INBOX.', '').capitalize()
-        storage_name = os.path.join(backup_folder, email, folder_name)
-        os.makedirs(storage_name, exist_ok=True)
-        return storage_name
 
     def get_mail_ids(self, folder_name):
         """
@@ -108,7 +92,7 @@ class EmailBackup:
         self.connect_to_mailbox(email, password, server, port)
         for folder in self.get_mailbox_folders():
             folder_name = folder.decode().split(' "." ')[-1].strip('"')
-            storage_name = self.create_backup_folder(email, folder_name)
+            storage_name = create_backup_folder(email, folder_name)
             mail_ids = self.get_mail_ids(folder_name)
             progress = tqdm(total=len(mail_ids), desc=f'Processing : {folder_name}')
             for mail_id in mail_ids:
@@ -116,4 +100,3 @@ class EmailBackup:
                 progress.update()
             progress.close()
         self.imap_conn.logout()
-

@@ -62,3 +62,13 @@ def fetch_mail_by_id(imap_conn, mail_id, storage_name):
     except Exception as e:
         print(f"Error fetching and storing email {mail_id}: {e}")
         return False
+
+
+def imap_watcher(imap_conn):
+    # check if the connection is still open and close it if necessary
+    if imap_conn.state == 'SELECTED':
+        imap_conn.close() # close the connection to the IMAP server
+    elif imap_conn.state == 'AUTH':
+        pass  # do nothing, the connection is still open but no mailbox is selected
+    else:
+        raise Exception('IMAP connection error: unexpected connection state')

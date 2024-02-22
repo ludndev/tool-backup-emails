@@ -33,3 +33,12 @@ def create_backup_folder(email, folder):
         os.makedirs(storage_name)
 
     return storage_name
+
+
+def get_mail_ids(folder_name, imap_conn):
+    imap_conn.select(f'"{folder_name}"', readonly=True)
+
+    _, _mail_ids = imap_conn.search(None, 'ALL')
+    mail_ids = _mail_ids[0].split()
+
+    return mail_ids

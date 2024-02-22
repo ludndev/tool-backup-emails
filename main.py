@@ -19,3 +19,17 @@ def connect_to_mailbox(email, password, server, port):
 
 def get_mailbox_folder(imap_conn):
     return imap_conn.list()[1]
+
+
+def create_backup_folder(email, folder):
+    folder_name = folder.decode().split(' "." ')[-1].strip('"')
+
+    if folder_name != "INBOX":
+        folder_name = folder_name.replace('INBOX.', '')
+
+    storage_name = os.path.join(email, folder_name.capitalize())
+
+    if not os.path.exists(storage_name):
+        os.makedirs(storage_name)
+
+    return storage_name

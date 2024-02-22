@@ -15,3 +15,7 @@ def connect_to_mailbox(email, password, server, port):
     imap_conn = imaplib.IMAP4_SSL(host=server, port=port)
     imap_conn.login(email, password)
     return imap_conn
+
+
+def get_mailbox_folder(imap_conn):
+    return imap_conn.list()[1]

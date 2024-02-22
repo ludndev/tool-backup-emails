@@ -3,6 +3,8 @@
 import csv
 import imaplib
 import os
+import signal
+import sys
 
 from tqdm import tqdm
 
@@ -110,3 +112,24 @@ def backup_account(email, password, server, port):
         imap_watcher(imap_conn)
 
     imap_conn.logout()  # proper logout
+
+
+def signal_handler(sig, frame):
+    print("Ctrl+C detected. Exiting gracefully...")
+    sys.exit(0)
+
+
+def main():
+    try:
+        while True:
+            print("Graceful shutdown ...")
+            pass
+    except KeyboardInterrupt:
+        pass
+
+    print("Exiting...")
+
+
+if __name__ == '__main__':
+    signal.signal(signal.SIGINT, signal_handler)
+    main()

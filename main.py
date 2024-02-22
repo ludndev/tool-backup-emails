@@ -3,6 +3,8 @@
 import imaplib
 import os
 
+from tqdm import tqdm
+
 
 def get_accounts(start_dir="."):
     for root, dirs, files in os.walk(start_dir):
@@ -42,3 +44,7 @@ def get_mail_ids(folder_name, imap_conn):
     mail_ids = _mail_ids[0].split()
 
     return mail_ids
+
+
+def progress_bar(folder_name, total):
+    return tqdm(total=total, desc=f'Processing : {folder_name}')

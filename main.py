@@ -48,3 +48,17 @@ def get_mail_ids(folder_name, imap_conn):
 
 def progress_bar(folder_name, total):
     return tqdm(total=total, desc=f'Processing : {folder_name}')
+
+
+def fetch_mail_by_id(imap_conn, mail_id, storage_name):
+    try:
+        _, data = imap_conn.fetch(mail_id, '(RFC822)')
+        filename = f'{storage_name}/{mail_id.decode()}.eml'
+
+        with open(filename, 'wb') as f:
+            f.write(data[0][1])
+
+        return True
+    except Exception as e:
+        print(f"Error fetching and storing email {mail_id}: {e}")
+        return False

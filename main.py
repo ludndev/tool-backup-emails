@@ -29,10 +29,13 @@ def main():
     Returns:
         None
     """
-    email_backup = EmailBackup()
+    max_zip_size = 450000000  # 450MB = 450*1000*1000
+
+    email_backup = EmailBackup(max_zip_size)
     try:
         for account in get_accounts():
             email_backup.backup_account(account['email'], account['password'], account['server'], account['port'])
+            email_backup.zip_backup(account['email'])
     except KeyboardInterrupt:
         pass
     print("Exiting...")

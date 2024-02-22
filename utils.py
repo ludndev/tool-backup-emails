@@ -94,18 +94,18 @@ def zip_files(path, zipf):
             zipf.write(os.path.join(root, file), os.path.join(folder, file))
 
 
-def zip_into_part(src_path, max_size):
+def zip_into_part(src_path, max_size, export_path="backups"):
     """
     Zips files into parts based on their size.
 
     Args:
         src_path (str): Path of the directory containing files to be zipped.
         max_size (int): Maximum size of the zipped files
+        export_path (str): Export path for the zipped files
 
     Returns:
         None
     """
-    export_path = "backups"
     archive_ext = ".zip"
 
     for archive_name in os.listdir(src_path):

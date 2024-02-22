@@ -11,12 +11,13 @@ class EmailBackup:
     A class for backing up emails from an IMAP mailbox.
     """
 
-    def __init__(self):
+    def __init__(self, max_zip_size=None, backup_folder="backups"):
         """
         Constructor method for initializing the EmailBackup instance.
         """
         self.imap_conn = None
-        self.max_zip_size = 450 * 1024 * 1024  # max to 472 MB
+        self.max_zip_size = max_zip_size
+        self.backup_folder = backup_folder
 
     def connect_to_mailbox(self, email, password, server, port):
         """
@@ -113,15 +114,13 @@ class EmailBackup:
         Returns:
             None
         """
-        if not os.path.exists('backups'):
-            os.makedirs('backups')
+        if not os.path.exists(self.backup_folder):
+            os.makedirs(self.backup_folder)
 
-        dir_size = get_dir_size(f'{email}')
-
-        if dir_size > self.max_zip_size:
-            zip_into_part(f'{email}')
-            print(f'\r\n! Saving parts on backups/{email}/')
+        if self.max_zip_size is not None and get_dir_size(f'{self.backup_folder}/{email}') > self.max_zip_size:
+            zip_into_part(f'{email}', self.max_zip_size, self.backup_folder)
+            print(f'\r\n! Saving parts on {self.backup_folder}/{email}/')
         else:
-            with zipfile.ZipFile(f'backups/{email}.zip', 'w', zipfile.ZIP_DEFLATED) as zipf:
+            with zipfile.ZipFile(f'{self.backup_folder}/{email}.zip', 'w', zipfile.ZIP_DEFLATED) as zipf:
                 zip_files(f'{email}', zipf)
-                print(f'\r\n! Saving as backups/{email}.zip')
+                print(f'\r\n! Saving as {self.backup_folder}/{email}.zip')

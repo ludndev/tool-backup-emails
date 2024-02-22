@@ -48,9 +48,7 @@ Contributions are welcome! If you would like to contribute to this project, plea
 ## Todo
 
 - [ ] Improve eml file naming
-- [ ] Use `config.py`
 - [x] Add args
-- [ ] Set max zip size in config
 - [ ] Make zipping optional
 - [ ] Write tests
 - [ ] Skip downloaded mail

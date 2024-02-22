@@ -1,16 +1,33 @@
 #!/usr/bin/env python
 
+import csv
 import imaplib
 import os
 
 from tqdm import tqdm
 
 
-def get_accounts(start_dir="."):
+def get_accounts(start_dir=".", filename="accounts.csv"):
+    csv_path = None
+
     for root, dirs, files in os.walk(start_dir):
         if "accounts.csv" in files:
-            return os.path.join(root, "accounts.csv")
-    return None
+            csv_path = os.path.join(root, filename)
+
+    if csv_path:
+        try:
+            accounts = []
+            with open(csv_path, newline='') as csv_file:
+                reader = csv.DictReader(csv_file)
+                for row in reader:
+                    accounts.append(row)
+            return accounts
+        except Exception as e:
+            print(f"Error reading CSV file '{csv_path}': {e}")
+            return None
+    else:
+        print("No accounts.csv file found in the specified directory.")
+        return None
 
 
 def connect_to_mailbox(email, password, server, port):

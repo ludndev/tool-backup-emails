@@ -1,6 +1,7 @@
 import csv
 import os
 import zipfile
+from email.utils import parsedate_to_datetime
 
 
 def get_accounts(start_dir=".", filename="accounts.csv"):
@@ -139,3 +140,20 @@ def zip_into_part(src_path, max_size, export_path="backups"):
                 for file in files:
                     tmp_file_name = file.rsplit('/', 1)[-1]
                     archive.write(os.path.join(file), os.path.join(archive_name, tmp_file_name))
+
+
+def parse_date(date):
+    """
+    Parses a date string into a Unix timestamp.
+
+    Args:
+        date (str): A date string in the format "Thu, 08 Sep 2022 18:01:33 GMT".
+
+    Returns:
+        int: Unix timestamp representing the given date.
+
+    Raises:
+        ValueError: If the input date string is not in the expected format.
+    """
+    dt = parsedate_to_datetime(date)
+    return int(dt.timestamp())

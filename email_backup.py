@@ -104,12 +104,20 @@ class EmailBackup:
         self.imap_conn.logout()
 
     def zip_backup(self, email):
+        """
+        Zips the email backup into a single archive or parts based on size.
+
+        Args:
+            email (str): Email address used as the directory name for the backup.
+
+        Returns:
+            None
+        """
         if not os.path.exists('backups'):
             os.makedirs('backups')
 
         dir_size = get_dir_size(f'{email}')
 
-        # zip into single file or chunk into folder
         if dir_size > self.max_zip_size:
             zip_into_part(f'{email}')
             print(f'\r\n! Saving parts on backups/{email}/')

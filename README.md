@@ -45,6 +45,14 @@ Contributions are welcome! If you would like to contribute to this project, plea
 4. Push your changes to your fork.
 5. Submit a pull request to the main repository.
 
+## Todo
+
+- [ ] Use `config.py`
+- [ ] Add args
+- [ ] Set max zip size in config
+- [ ] Make zipping optional
+- [ ] Write tests
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

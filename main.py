@@ -42,11 +42,11 @@ def get_mailbox_folder(imap_conn):
     return imap_conn.list()[1]
 
 
-def create_backup_folder(email, folder_name):
+def create_backup_folder(email, folder_name, backup_folder="backups"):
     if folder_name != "INBOX":
         folder_name = folder_name.replace('INBOX.', '')
 
-    storage_name = os.path.join(email, folder_name.capitalize())
+    storage_name = os.path.join(backup_folder, email, folder_name.capitalize())
 
     if not os.path.exists(storage_name):
         os.makedirs(storage_name)

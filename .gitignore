@@ -161,3 +161,6 @@ cython_debug/
 
 # accounts identity and password file
 accounts.csv
+
+# ignore backups folder
+backups/

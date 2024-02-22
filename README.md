@@ -26,14 +26,27 @@ git clone https://github.com/ludndev/tool-backup-emails
 pip install -r requirements.txt
 ```
 
-## Usage
+## Setup
 
-1. Prepare a CSV file named `accounts.csv` containing email account details (email, password, server, port).
-2. Run the `main.py` script:
+Prepare a CSV file named `accounts.csv` containing email account details (email, password, server, port) in the root directory.
 
+## Command-line Interface (CLI) Options
+
+The Email Backup Tool supports the following command-line options:
+
+- `-h, --help`: Display the help message and exit.
+- `--zip ZIP`: Specifies the maximum size in MB for each archive.
+- `--backup BACKUP`: Specifies the path of the backup folder. (Default: `backups`)
+
+### Usage Example
+
+To run the script with custom options:
+
+```bash
+python main.py --zip 100 --backup /path/to/backup/folder
 ```
-python main.py
-```
+
+Replace `/path/to/backup/folder` with the desired destination folder for storing backups.
 
 ## Contributing
 

@@ -1,8 +1,9 @@
 import imaplib
 import os
+import zipfile
 
 from tqdm import tqdm
-from utils import create_backup_folder
+from utils import create_backup_folder, get_dir_size, zip_into_part, zip_files
 
 
 class EmailBackup:
@@ -15,6 +16,7 @@ class EmailBackup:
         Constructor method for initializing the EmailBackup instance.
         """
         self.imap_conn = None
+        self.max_zip_size = 450 * 1024 * 1024  # max to 472 MB
 
     def connect_to_mailbox(self, email, password, server, port):
         """
@@ -100,3 +102,18 @@ class EmailBackup:
                 progress.update()
             progress.close()
         self.imap_conn.logout()
+
+    def zip_backup(self, email):
+        if not os.path.exists('backups'):
+            os.makedirs('backups')
+
+        dir_size = get_dir_size(f'{email}')
+
+        # zip into single file or chunk into folder
+        if dir_size > self.max_zip_size:
+            zip_into_part(f'{email}')
+            print(f'\r\n! Saving parts on backups/{email}/')
+        else:
+            with zipfile.ZipFile(f'backups/{email}.zip', 'w', zipfile.ZIP_DEFLATED) as zipf:
+                zip_files(f'{email}', zipf)
+                print(f'\r\n! Saving as backups/{email}.zip')

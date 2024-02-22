@@ -1,8 +1,11 @@
+import hashlib
 import imaplib
 import os
+import zipfile
+from email.parser import BytesParser
 
 from tqdm import tqdm
-from utils import create_backup_folder
+from utils import create_backup_folder, get_dir_size, zip_into_part, zip_files, parse_date
 
 
 class EmailBackup:
@@ -10,11 +13,13 @@ class EmailBackup:
     A class for backing up emails from an IMAP mailbox.
     """
 
-    def __init__(self):
+    def __init__(self, max_zip_size=None, backup_folder="backups"):
         """
         Constructor method for initializing the EmailBackup instance.
         """
         self.imap_conn = None
+        self.max_zip_size = max_zip_size
+        self.backup_folder = backup_folder
 
     def connect_to_mailbox(self, email, password, server, port):
         """
@@ -56,21 +61,17 @@ class EmailBackup:
         return _mail_ids[0].split()
 
     def fetch_mail_by_id(self, mail_id, storage_name):
-        """
-        Fetches and stores an email by its ID.
-
-        Args:
-            mail_id (bytes): ID of the email to fetch.
-            storage_name (str): Path to the backup folder for storing the email.
-
-        Returns:
-            bool: True if the email is fetched and stored successfully, False otherwise.
-        """
         try:
             _, data = self.imap_conn.fetch(mail_id, '(RFC822)')
-            filename = os.path.join(storage_name, f'{mail_id.decode()}.eml')
-            with open(filename, 'wb') as f:
+            email_message = BytesParser().parsebytes(data[0][1])
+            message_hash = hashlib.sha1(email_message.as_string().encode()).hexdigest()
+            timestamp = parse_date(email_message.get("Date"))
+            filename = f'{mail_id}_{timestamp}_{message_hash}.eml'
+            filename = "".join(x for x in filename if x.isalnum() or x in "_-.")
+
+            with open(os.path.join(storage_name, filename), 'wb') as f:
                 f.write(data[0][1])
+
             return True
         except Exception as e:
             print(f"Error fetching and storing email {mail_id}: {e}")
@@ -100,3 +101,24 @@ class EmailBackup:
                 progress.update()
             progress.close()
         self.imap_conn.logout()
+
+    def zip_backup(self, email):
+        """
+        Zips the email backup into a single archive or parts based on size.
+
+        Args:
+            email (str): Email address used as the directory name for the backup.
+
+        Returns:
+            None
+        """
+        if not os.path.exists(self.backup_folder):
+            os.makedirs(self.backup_folder)
+
+        if self.max_zip_size is not None and get_dir_size(f'{self.backup_folder}/{email}') > self.max_zip_size:
+            zip_into_part(f'{self.backup_folder}/{email}', self.max_zip_size, self.backup_folder)
+            print(f'\r\n! Saving parts on {self.backup_folder}/{email}/')
+        else:
+            with zipfile.ZipFile(f'{self.backup_folder}/{email}.zip', 'w', zipfile.ZIP_DEFLATED) as zipf:
+                zip_files(f'{self.backup_folder}/{email}', zipf)
+                print(f'\r\n! Saving as {self.backup_folder}/{email}.zip')

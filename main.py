@@ -42,9 +42,7 @@ def get_mailbox_folder(imap_conn):
     return imap_conn.list()[1]
 
 
-def create_backup_folder(email, folder):
-    folder_name = folder.decode().split(' "." ')[-1].strip('"')
-
+def create_backup_folder(email, folder_name):
     if folder_name != "INBOX":
         folder_name = folder_name.replace('INBOX.', '')
 
@@ -99,11 +97,13 @@ def backup_account(email, password, server, port):
     folders = get_mailbox_folder(imap_conn)
 
     for folder in folders:
-        storage_name = create_backup_folder(email, folder)
+        folder_name = folder.decode().split(' "." ')[-1].strip('"')
 
-        mail_ids = get_mail_ids(folders, imap_conn)
+        storage_name = create_backup_folder(email, folder_name)
 
-        progress = progress_bar(folder, len(mail_ids))
+        mail_ids = get_mail_ids(folder_name, imap_conn)
+
+        progress = progress_bar(folder_name, len(mail_ids))
 
         for mail_id in mail_ids:
             fetch_mail_by_id(imap_conn, mail_id, storage_name)

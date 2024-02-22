@@ -1,9 +1,11 @@
+import hashlib
 import imaplib
 import os
 import zipfile
+from email.parser import BytesParser
 
 from tqdm import tqdm
-from utils import create_backup_folder, get_dir_size, zip_into_part, zip_files
+from utils import create_backup_folder, get_dir_size, zip_into_part, zip_files, parse_date
 
 
 class EmailBackup:
@@ -59,21 +61,17 @@ class EmailBackup:
         return _mail_ids[0].split()
 
     def fetch_mail_by_id(self, mail_id, storage_name):
-        """
-        Fetches and stores an email by its ID.
-
-        Args:
-            mail_id (bytes): ID of the email to fetch.
-            storage_name (str): Path to the backup folder for storing the email.
-
-        Returns:
-            bool: True if the email is fetched and stored successfully, False otherwise.
-        """
         try:
             _, data = self.imap_conn.fetch(mail_id, '(RFC822)')
-            filename = os.path.join(storage_name, f'{mail_id.decode()}.eml')
-            with open(filename, 'wb') as f:
+            email_message = BytesParser().parsebytes(data[0][1])
+            message_hash = hashlib.sha1(email_message.as_string().encode()).hexdigest()
+            timestamp = parse_date(email_message.get("Date"))
+            filename = f'{mail_id}_{timestamp}_{message_hash}.eml'
+            filename = "".join(x for x in filename if x.isalnum() or x in "_-.")
+
+            with open(os.path.join(storage_name, filename), 'wb') as f:
                 f.write(data[0][1])
+
             return True
         except Exception as e:
             print(f"Error fetching and storing email {mail_id}: {e}")

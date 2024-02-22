@@ -121,9 +121,8 @@ def signal_handler(sig, frame):
 
 def main():
     try:
-        while True:
-            print("Graceful shutdown ...")
-            pass
+        for account in get_accounts():
+            backup_account(account['email'], account['password'], account['server'], account['port'])
     except KeyboardInterrupt:
         pass
 

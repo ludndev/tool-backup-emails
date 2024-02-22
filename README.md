@@ -47,7 +47,7 @@ Contributions are welcome! If you would like to contribute to this project, plea
 
 ## Todo
 
-- [ ] Improve eml file naming
+- [x] Improve eml file naming
 - [x] Add args
 - [x] Make zipping optional
 - [ ] Write tests

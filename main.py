@@ -67,8 +67,29 @@ def fetch_mail_by_id(imap_conn, mail_id, storage_name):
 def imap_watcher(imap_conn):
     # check if the connection is still open and close it if necessary
     if imap_conn.state == 'SELECTED':
-        imap_conn.close() # close the connection to the IMAP server
+        imap_conn.close()  # close the connection to the IMAP server
     elif imap_conn.state == 'AUTH':
         pass  # do nothing, the connection is still open but no mailbox is selected
     else:
         raise Exception('IMAP connection error: unexpected connection state')
+
+
+def backup_account(email, password, server, port):
+    imap_conn = connect_to_mailbox(email, password, server, port)
+
+    folders = get_mailbox_folder(imap_conn)
+
+    for folder in folders:
+        storage_name = create_backup_folder(email, folder)
+
+        mail_ids = get_mail_ids(folders, imap_conn)
+
+        progress = progress_bar(folder, len(mail_ids))
+
+        for mail_id in mail_ids:
+            fetch_mail_by_id(imap_conn, mail_id, storage_name)
+            progress.update()
+
+        imap_watcher(imap_conn)
+
+    imap_conn.logout()  # proper logout

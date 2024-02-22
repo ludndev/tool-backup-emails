@@ -5,29 +5,83 @@ from tqdm import tqdm
 
 
 class EmailBackup:
+    """
+    A class for backing up emails from an IMAP mailbox.
+    """
 
     def __init__(self):
+        """
+        Constructor method for initializing the EmailBackup instance.
+        """
         self.imap_conn = None
 
     def connect_to_mailbox(self, email, password, server, port):
+        """
+        Connects to the IMAP mailbox server.
+
+        Args:
+            email (str): Email address.
+            password (str): Password for the email account.
+            server (str): IMAP server hostname.
+            port (int): Port number for the IMAP server.
+
+        Returns:
+            None
+        """
         self.imap_conn = imaplib.IMAP4_SSL(host=server, port=port)
         self.imap_conn.login(email, password)
 
     def get_mailbox_folders(self):
+        """
+        Retrieves a list of available mailbox folders.
+
+        Returns:
+            list: List of mailbox folders.
+        """
         return self.imap_conn.list()[1]
 
     def create_backup_folder(self, email, folder_name, backup_folder="backups"):
+        """
+        Creates a local backup folder for storing email backups.
+
+        Args:
+            email (str): Email address.
+            folder_name (str): Name of the mailbox folder.
+            backup_folder (str, optional): Root directory for storing backups. Defaults to "backups".
+
+        Returns:
+            str: Path to the created backup folder.
+        """
         folder_name = folder_name.replace('INBOX.', '').capitalize()
         storage_name = os.path.join(backup_folder, email, folder_name)
         os.makedirs(storage_name, exist_ok=True)
         return storage_name
 
     def get_mail_ids(self, folder_name):
+        """
+        Retrieves the IDs of emails in a specified folder.
+
+        Args:
+            folder_name (str): Name of the mailbox folder.
+
+        Returns:
+            list: List of email IDs.
+        """
         self.imap_conn.select(f'"{folder_name}"', readonly=True)
         _, _mail_ids = self.imap_conn.search(None, 'ALL')
         return _mail_ids[0].split()
 
     def fetch_mail_by_id(self, mail_id, storage_name):
+        """
+        Fetches and stores an email by its ID.
+
+        Args:
+            mail_id (bytes): ID of the email to fetch.
+            storage_name (str): Path to the backup folder for storing the email.
+
+        Returns:
+            bool: True if the email is fetched and stored successfully, False otherwise.
+        """
         try:
             _, data = self.imap_conn.fetch(mail_id, '(RFC822)')
             filename = os.path.join(storage_name, f'{mail_id.decode()}.eml')
@@ -39,6 +93,18 @@ class EmailBackup:
             return False
 
     def backup_account(self, email, password, server, port):
+        """
+        Backs up emails from the specified email account.
+
+        Args:
+            email (str): Email address.
+            password (str): Password for the email account.
+            server (str): IMAP server hostname.
+            port (int): Port number for the IMAP server.
+
+        Returns:
+            None
+        """
         self.connect_to_mailbox(email, password, server, port)
         for folder in self.get_mailbox_folders():
             folder_name = folder.decode().split(' "." ')[-1].strip('"')

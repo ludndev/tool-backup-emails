@@ -3,6 +3,20 @@ import os
 
 
 def get_accounts(start_dir=".", filename="accounts.csv"):
+    """
+    Retrieves email account details from a CSV file.
+
+    Searches for the specified CSV file containing email account details in the specified directory
+    and its subdirectories. Reads the CSV file and returns a list of dictionaries, where each dictionary
+    represents an email account with keys 'email', 'password', 'server', and 'port'.
+
+    Args:
+        start_dir (str, optional): Directory to search for the CSV file. Defaults to "." (current directory).
+        filename (str, optional): Name of the CSV file containing account details. Defaults to "accounts.csv".
+
+    Returns:
+        list: List of dictionaries representing email accounts, or None if the CSV file is not found or an error occurs.
+    """
     csv_path = None
     for root, dirs, files in os.walk(start_dir):
         if filename in files:

@@ -1,5 +1,6 @@
 import csv
 import os
+import zipfile
 
 
 def get_accounts(start_dir=".", filename="accounts.csv"):
@@ -92,3 +93,49 @@ def zip_files(path, zipf):
         for file in files:
             zipf.write(os.path.join(root, file), os.path.join(folder, file))
 
+
+def zip_into_part(src_path, max_size):
+    """
+    Zips files into parts based on their size.
+
+    Args:
+        src_path (str): Path of the directory containing files to be zipped.
+        max_size (int): Maximum size of the zipped files
+
+    Returns:
+        None
+    """
+    export_path = "backups"
+    archive_ext = ".zip"
+
+    for archive_name in os.listdir(src_path):
+        archive_num = 1
+        size = 0
+        files = []
+        sub_path = os.path.join(src_path, archive_name)
+        dst_path = os.path.join(export_path, sub_path)
+
+        if not os.path.exists(dst_path):
+            os.makedirs(dst_path)
+
+        for filename in os.listdir(sub_path):
+            filepath = os.path.join(sub_path, filename)
+            filesize = os.path.getsize(filepath)
+            if size + filesize > max_size:
+                archive_path = os.path.join(dst_path, f"{archive_name}-{archive_num}{archive_ext}")
+                with zipfile.ZipFile(archive_path, "w", zipfile.ZIP_DEFLATED) as archive:
+                    for file in files:
+                        tmp_file_name = file.rsplit('/', 1)[-1]
+                        archive.write(os.path.join(file), os.path.join(archive_name, tmp_file_name))
+                size = 0
+                files = []
+                archive_num += 1
+            files.append(filepath)
+            size += filesize
+
+        if files:
+            archive_path = os.path.join(dst_path, f"{archive_name}-{archive_num}{archive_ext}")
+            with zipfile.ZipFile(archive_path, "w") as archive:
+                for file in files:
+                    tmp_file_name = file.rsplit('/', 1)[-1]
+                    archive.write(os.path.join(file), os.path.join(archive_name, tmp_file_name))

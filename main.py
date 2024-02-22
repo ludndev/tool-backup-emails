@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import argparse
 import signal
 import sys
 
@@ -22,6 +23,19 @@ def signal_handler(sig, frame):
     sys.exit(0)
 
 
+def parse_arguments():
+    """
+    Parse command-line arguments.
+
+    Returns:
+        argparse.Namespace: Parsed arguments.
+    """
+    parser = argparse.ArgumentParser(description="Email Backup Tool")
+    parser.add_argument("--zip", type=int, help="Maximum size in MB for each archive")
+    parser.add_argument("--backup", default="backups", help="Path of the backup folder (default: backups)")
+    return parser.parse_args()
+
+
 def main():
     """
     Main function to execute the email backup process.
@@ -29,9 +43,10 @@ def main():
     Returns:
         None
     """
-    max_zip_size = 450000000  # 450MB = 450*1000*1000
+    args = parse_arguments()
 
-    email_backup = EmailBackup(max_zip_size)
+    email_backup = EmailBackup(max_zip_size=args.zip, backup_folder=args.backup)
+
     try:
         for account in get_accounts():
             email_backup.backup_account(account['email'], account['password'], account['server'], account['port'])

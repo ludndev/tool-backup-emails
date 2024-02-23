@@ -37,6 +37,11 @@ The Email Backup Tool supports the following command-line options:
 - `-h, --help`: Display the help message and exit.
 - `--zip ZIP`: Specifies the maximum size in MB for each archive.
 - `--backup BACKUP`: Specifies the path of the backup folder. (Default: `backups`)
+- `--account ACCOUNT`: Path of the CSV file containing account information.
+- `--email EMAIL`: Email address of the account to be backed up.
+- `--password PASSWORD`: Password of the email account.
+- `--server SERVER`: IMAP server address for accessing emails.
+- `--port PORT`: Port number of the IMAP server.
 
 ### Usage Example
 

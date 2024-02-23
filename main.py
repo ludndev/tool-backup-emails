@@ -5,7 +5,7 @@ import signal
 import sys
 
 from email_backup import EmailBackup
-from utils import get_accounts, get_accounts_csv, extract_domain_from_email
+from utils import get_accounts, get_accounts_csv, extract_domain_from_email, build_account_dict
 
 
 def signal_handler(sig, frame):
@@ -58,19 +58,7 @@ def main():
 
     if args.email is not None and args.password is not None:
         is_single_account = True
-
-        account = {
-            "email": args.email,
-            "password": args.password,
-            "server": extract_domain_from_email(args.email),
-            "port": 993,  # default imap port
-        }
-
-        if args.server is not None:
-            account['server'] = args.server
-
-        if args.port is not None:
-            account['port'] = args.port
+        account = build_account_dict(args)
 
     if args.account is not None:
         account_csv = args.account

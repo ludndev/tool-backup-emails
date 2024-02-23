@@ -219,3 +219,30 @@ def extract_domain_from_email(email):
         return match.group(1)
     else:
         return None
+
+
+def build_account_dict(args, default_port=993):
+    """
+    Build a dictionary containing account information based on the provided arguments.
+
+    Args:
+        args: The parsed arguments containing email, password, server, and port information.
+        default_port (int, optional): The default port number to use if not provided in the arguments. Defaults to 993.
+
+    Returns:
+        dict: A dictionary containing account information with keys 'email', 'password', 'server', and 'port'.
+    """
+    account = {
+        "email": args.email,
+        "password": args.password,
+        "server": extract_domain_from_email(args.email),
+        "port": default_port,  # default imap port
+    }
+
+    if args.server is not None:
+        account['server'] = args.server
+
+    if args.port is not None:
+        account['port'] = args.port
+
+    return account

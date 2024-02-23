@@ -4,8 +4,7 @@ import argparse
 import signal
 import sys
 
-from email_backup import EmailBackup
-from utils import get_accounts, get_accounts_csv, extract_domain_from_email, build_account_dict
+from EmailBackup import EmailBackup, get_accounts_csv, get_accounts, build_account_dict
 
 
 def signal_handler(sig, frame):

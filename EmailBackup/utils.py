@@ -72,7 +72,6 @@ def get_accounts(start_dir=".", filename="accounts.csv"):
 
     if csv_path:
         try:
-            accounts = []
             with open(csv_path, newline='') as csv_file:
                 reader = csv.DictReader(csv_file)
                 accounts = list(reader)

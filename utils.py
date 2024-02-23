@@ -4,6 +4,19 @@ import zipfile
 from email.utils import parsedate_to_datetime
 
 
+def is_full_path(path):
+    """
+    Check if a given path is a full (absolute) path or a relative path.
+
+    Args:
+        path (str): The path to check.
+
+    Returns:
+        bool: True if the path is a full path, False if it's a relative path.
+    """
+    return os.path.isabs(path)
+
+
 def get_accounts_csv(start_dir=".", filename="accounts.csv"):
     """
     Search for a file named 'filename' within the directory tree rooted at 'start_dir' and return its path.

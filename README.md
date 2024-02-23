@@ -65,7 +65,7 @@ Contributions are welcome! If you would like to contribute to this project, plea
 - [x] Make zipping optional
 - [ ] Write tests
 - [ ] Skip downloaded mail
-- [ ] Backup single account using cli arg
+- [x Backup single account using cli arg
 
 ## License
 

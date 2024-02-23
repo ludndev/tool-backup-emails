@@ -4,6 +4,23 @@ import zipfile
 from email.utils import parsedate_to_datetime
 
 
+def get_accounts_csv(start_dir=".", filename="accounts.csv"):
+    """
+    Search for a file named 'filename' within the directory tree rooted at 'start_dir' and return its path.
+
+    Args:
+        start_dir (str, optional): The directory to start the search from. Defaults to the current directory.
+        filename (str, optional): The name of the file to search for. Defaults to "accounts.csv".
+
+    Returns:
+        str or None: The absolute path of the file if found, otherwise None.
+    """
+    for root, dirs, files in os.walk(start_dir):
+        if filename in files:
+            return os.path.join(root, filename)
+    return None
+
+
 def get_accounts(start_dir=".", filename="accounts.csv"):
     """
     Retrieves email account details from a CSV file.
@@ -19,11 +36,7 @@ def get_accounts(start_dir=".", filename="accounts.csv"):
     Returns:
         list: List of dictionaries representing email accounts, or None if the CSV file is not found or an error occurs.
     """
-    csv_path = None
-    for root, dirs, files in os.walk(start_dir):
-        if filename in files:
-            csv_path = os.path.join(root, filename)
-            break
+    csv_path = get_accounts_csv(start_dir, filename)
 
     if csv_path:
         try:

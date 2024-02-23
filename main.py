@@ -40,7 +40,7 @@ def parse_arguments():
     parser.add_argument("--email", help="Email address of the account to be backed up")
     parser.add_argument("--password", help="Password of the email account")
     parser.add_argument("--server", help="IMAP server address for accessing emails")
-    parser.add_argument("--port", help="Port number of the IMAP server")
+    parser.add_argument("--port", type=int, help="Port number of the IMAP server")
     return parser.parse_args()
 
 

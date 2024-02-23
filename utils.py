@@ -41,6 +41,10 @@ def get_accounts_csv(start_dir=".", filename="accounts.csv"):
     Returns:
         str or None: The absolute path of the file if found, otherwise None.
     """
+
+    if is_full_path(filename) and file_exists(filename):
+        return filename
+
     for root, dirs, files in os.walk(start_dir):
         if filename in files:
             return os.path.join(root, filename)

@@ -75,7 +75,7 @@ def main():
     if args.account is not None:
         account_csv = args.account
 
-    if get_accounts_csv(filename="accounts.csv") is None:
+    if get_accounts_csv(filename=account_csv) is None:
         # @todo: file not found, show error
         args.func()
 

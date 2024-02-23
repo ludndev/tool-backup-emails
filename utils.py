@@ -14,7 +14,8 @@ def is_full_path(path):
     Returns:
         bool: True if the path is a full path, False if it's a relative path.
     """
-    return os.path.isabs(path)
+    expanded_path = os.path.expanduser(path)
+    return os.path.isabs(expanded_path)
 
 
 def file_exists(file_path):

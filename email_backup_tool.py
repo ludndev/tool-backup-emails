@@ -4,8 +4,7 @@ import argparse
 import signal
 import sys
 
-from email_backup import EmailBackup
-from utils import get_accounts
+from EmailBackup import EmailBackup, get_accounts_csv, get_accounts, build_account_dict
 
 
 def signal_handler(sig, frame):
@@ -31,8 +30,16 @@ def parse_arguments():
         argparse.Namespace: Parsed arguments.
     """
     parser = argparse.ArgumentParser(description="Email Backup Tool")
+
+    parser.set_defaults(func=parser.print_help)
+
     parser.add_argument("--zip", type=int, help="Maximum size in MB for each archive")
     parser.add_argument("--backup", default="backups", help="Path of the backup folder (default: backups)")
+    parser.add_argument("--account", help="Path of the CSV file containing account information")
+    parser.add_argument("--email", help="Email address of the account to be backed up")
+    parser.add_argument("--password", help="Password of the email account")
+    parser.add_argument("--server", help="IMAP server address for accessing emails")
+    parser.add_argument("--port", type=int, help="Port number of the IMAP server")
     return parser.parse_args()
 
 
@@ -43,12 +50,32 @@ def main():
     Returns:
         None
     """
+    account_csv = "accounts.csv"
+    is_single_account = False
+
     args = parse_arguments()
+
+    if args.email is not None and args.password is not None:
+        is_single_account = True
+        account = build_account_dict(args)
+
+    if args.account is not None:
+        account_csv = args.account
+
+    if get_accounts_csv(filename=account_csv) is None:
+        # @todo: file not found, show error
+        args.func()
 
     email_backup = EmailBackup(max_zip_size=args.zip, backup_folder=args.backup)
 
     try:
-        for account in get_accounts():
+        if is_single_account:
+            print("Extracting single account information")
+            email_backup.backup_account(account['email'], account['password'], account['server'], account['port'])
+            email_backup.zip_backup(account['email'])
+            return
+
+        for account in get_accounts(filename=account_csv):
             email_backup.backup_account(account['email'], account['password'], account['server'], account['port'])
             email_backup.zip_backup(account['email'])
     except KeyboardInterrupt:

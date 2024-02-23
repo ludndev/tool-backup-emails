@@ -37,16 +37,41 @@ The Email Backup Tool supports the following command-line options:
 - `-h, --help`: Display the help message and exit.
 - `--zip ZIP`: Specifies the maximum size in MB for each archive.
 - `--backup BACKUP`: Specifies the path of the backup folder. (Default: `backups`)
+- `--account ACCOUNT`: Path of the CSV file containing account information.
+- `--email EMAIL`: Email address of the account to be backed up.
+- `--password PASSWORD`: Password of the email account.
+- `--server SERVER`: IMAP server address for accessing emails.
+- `--port PORT`: Port number of the IMAP server.
 
-### Usage Example
+## Usage Example
 
 To run the script with custom options:
 
+1. Backup emails with default settings:
 ```bash
-python main.py --zip 100 --backup /path/to/backup/folder
+python email_backup_tool.py
 ```
 
+2. Backup emails with a custom backup folder:
+```bash
+python email_backup_tool.py --backup /path/to/backup/folder
+```
 Replace `/path/to/backup/folder` with the desired destination folder for storing backups.
+
+3. Backup emails with a custom accounts source file:
+```bash
+python email_backup_tool.py --account list_account.csv
+```
+
+4. Backup emails on single account:
+```bash
+python email_backup_tool.py --email example@example.com --password my_password
+```
+
+5. Display help message:
+```bash
+python email_backup_tool.py -h
+```
 
 ## Contributing
 
@@ -65,6 +90,7 @@ Contributions are welcome! If you would like to contribute to this project, plea
 - [x] Make zipping optional
 - [ ] Write tests
 - [ ] Skip downloaded mail
+- [x] Backup single account using cli arg
 
 ## License
 

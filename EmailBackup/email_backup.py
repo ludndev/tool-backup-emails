@@ -5,7 +5,7 @@ import zipfile
 from email.parser import BytesParser
 
 from tqdm import tqdm
-from utils import create_backup_folder, get_dir_size, zip_into_part, zip_files, parse_date
+from EmailBackup.utils import create_backup_folder, get_dir_size, zip_into_part, zip_files, parse_date
 
 
 class EmailBackup:

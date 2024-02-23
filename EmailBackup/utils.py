@@ -1,7 +1,56 @@
 import csv
 import os
+import re
 import zipfile
 from email.utils import parsedate_to_datetime
+
+
+def is_full_path(path):
+    """
+    Check if a given path is a full (absolute) path or a relative path.
+
+    Args:
+        path (str): The path to check.
+
+    Returns:
+        bool: True if the path is a full path, False if it's a relative path.
+    """
+    expanded_path = os.path.expanduser(path)
+    return os.path.isabs(expanded_path)
+
+
+def file_exists(file_path):
+    """
+    Check if a file exists.
+
+    Args:
+        file_path (str): The path to the file.
+
+    Returns:
+        bool: True if the file exists, False otherwise.
+    """
+    return os.path.exists(file_path)
+
+
+def get_accounts_csv(start_dir=".", filename="accounts.csv"):
+    """
+    Search for a file named 'filename' within the directory tree rooted at 'start_dir' and return its path.
+
+    Args:
+        start_dir (str, optional): The directory to start the search from. Defaults to the current directory.
+        filename (str, optional): The name of the file to search for. Defaults to "accounts.csv".
+
+    Returns:
+        str or None: The absolute path of the file if found, otherwise None.
+    """
+
+    if is_full_path(filename) and file_exists(filename):
+        return filename
+
+    for root, dirs, files in os.walk(start_dir):
+        if filename in files:
+            return os.path.join(root, filename)
+    return None
 
 
 def get_accounts(start_dir=".", filename="accounts.csv"):
@@ -19,11 +68,7 @@ def get_accounts(start_dir=".", filename="accounts.csv"):
     Returns:
         list: List of dictionaries representing email accounts, or None if the CSV file is not found or an error occurs.
     """
-    csv_path = None
-    for root, dirs, files in os.walk(start_dir):
-        if filename in files:
-            csv_path = os.path.join(root, filename)
-            break
+    csv_path = get_accounts_csv(start_dir, filename)
 
     if csv_path:
         try:
@@ -157,3 +202,47 @@ def parse_date(date):
     """
     dt = parsedate_to_datetime(date)
     return int(dt.timestamp())
+
+
+def extract_domain_from_email(email):
+    """
+    Extract the domain from an email address using regular expressions.
+
+    Args:
+        email (str): The email address.
+
+    Returns:
+        str: The domain part of the email address.
+    """
+    match = re.search(r'@(.+)$', email)
+    if match:
+        return match.group(1)
+    else:
+        return None
+
+
+def build_account_dict(args, default_port=993):
+    """
+    Build a dictionary containing account information based on the provided arguments.
+
+    Args:
+        args: The parsed arguments containing email, password, server, and port information.
+        default_port (int, optional): The default port number to use if not provided in the arguments. Defaults to 993.
+
+    Returns:
+        dict: A dictionary containing account information with keys 'email', 'password', 'server', and 'port'.
+    """
+    account = {
+        "email": args.email,
+        "password": args.password,
+        "server": extract_domain_from_email(args.email),
+        "port": default_port,  # default imap port
+    }
+
+    if args.server is not None:
+        account['server'] = args.server
+
+    if args.port is not None:
+        account['port'] = args.port
+
+    return account

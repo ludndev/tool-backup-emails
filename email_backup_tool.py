@@ -57,7 +57,6 @@ def main():
 
     if args.email is not None and args.password is not None:
         is_single_account = True
-        account = build_account_dict(args)
 
     if args.account is not None:
         account_csv = args.account
@@ -71,6 +70,7 @@ def main():
     try:
         if is_single_account:
             print("Extracting single account information")
+            account = build_account_dict(args)
             email_backup.backup_account(account['email'], account['password'], account['server'], account['port'])
             email_backup.zip_backup(account['email'])
             return

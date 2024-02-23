@@ -17,6 +17,19 @@ def is_full_path(path):
     return os.path.isabs(path)
 
 
+def file_exists(file_path):
+    """
+    Check if a file exists.
+
+    Args:
+        file_path (str): The path to the file.
+
+    Returns:
+        bool: True if the file exists, False otherwise.
+    """
+    return os.path.exists(file_path)
+
+
 def get_accounts_csv(start_dir=".", filename="accounts.csv"):
     """
     Search for a file named 'filename' within the directory tree rooted at 'start_dir' and return its path.

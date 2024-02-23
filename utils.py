@@ -1,5 +1,6 @@
 import csv
 import os
+import re
 import zipfile
 from email.utils import parsedate_to_datetime
 
@@ -201,3 +202,20 @@ def parse_date(date):
     """
     dt = parsedate_to_datetime(date)
     return int(dt.timestamp())
+
+
+def extract_domain_from_email(email):
+    """
+    Extract the domain from an email address using regular expressions.
+
+    Args:
+        email (str): The email address.
+
+    Returns:
+        str: The domain part of the email address.
+    """
+    match = re.search(r'@(.+)$', email)
+    if match:
+        return match.group(1)
+    else:
+        return None

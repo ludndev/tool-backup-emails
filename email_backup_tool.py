@@ -69,13 +69,14 @@ def main():
 
     try:
         if is_single_account:
-            print("Extracting single account information")
             account = build_account_dict(args)
+            print(f"[single] Extracting emails from {account['email']}")
             email_backup.backup_account(account['email'], account['password'], account['server'], account['port'])
             email_backup.zip_backup(account['email'])
             return
 
         for account in get_accounts(filename=account_csv):
+            print(f"[multi] Extracting emails from {account['email']}")
             email_backup.backup_account(account['email'], account['password'], account['server'], account['port'])
             email_backup.zip_backup(account['email'])
     except KeyboardInterrupt:

@@ -121,4 +121,4 @@ class EmailBackup:
         else:
             with zipfile.ZipFile(f'{self.backup_folder}/{email}.zip', 'w', zipfile.ZIP_DEFLATED) as zipf:
                 zip_files(f'{self.backup_folder}/{email}', zipf)
-                print(f'\r\n! Saving as {self.backup_folder}/{email}.zip')
+                print(f'! Saving as {self.backup_folder}/{email}.zip \n')

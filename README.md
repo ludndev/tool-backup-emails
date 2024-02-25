@@ -94,6 +94,7 @@ Contributions are welcome! If you would like to contribute to this project, plea
 - [ ] Allow file format choice
 - [ ] Clean directories after zipping
 - [ ] Restore to remote server
+- [ ] Use multi threading
 
 ## License
 

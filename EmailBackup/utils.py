@@ -245,3 +245,92 @@ def build_account_dict(args, default_port=993):
         account['port'] = args.port
 
     return account
+
+
+def modified_base64(s):
+    s_utf7 = s.encode('utf-7')  #
+    aaa = s_utf7[1:-1].decode().replace('/', ',')  # rfc2060
+    return aaa
+
+
+def modified_unbase64(s):
+    """
+    Decode a modified UTF-7 encoded string back to its original form.
+
+    Args:
+        s (str): The modified UTF-7 encoded string.
+
+    Returns:
+        str: The decoded original string.
+    """
+    s_utf7 = '+' + s.replace(',', '/') + '-'
+    return s_utf7.encode().decode('utf-7')
+
+
+def encode_imap4_utf7(s, errors=None):
+    """
+    Encode a string into modified UTF-7 format as per IMAP4 specification.
+
+    Args:
+        s (str): The input string to encode.
+        errors (str, optional): Specifies the error handling scheme. Defaults to None.
+
+    Returns:
+        tuple: A tuple containing the encoded string and its length.
+    """
+    r = []
+    _in = []
+    for c in s:
+        if ord(c) in range(0x20, 0x25) or ord(c) in range(0x27, 0x7e):
+            if _in:
+                r.extend(['&', modified_base64(''.join(_in)), '-'])
+                del _in[:]
+            r.append(str(c))
+        elif ord(c) == 0x26:
+            if _in:
+                r.extend(['&', modified_base64(''.join(_in)), '-'])
+                del _in[:]
+            r.append('&-')
+        else:
+            _in.append(c)
+    if _in:
+        r.extend(['&', modified_base64(''.join(_in)), '-'])
+    return ''.join(r), len(s)
+
+
+def decode_imap4_utf7(s):
+    """
+    Decode a string from modified UTF-7 format as per IMAP4 specification.
+
+    Args:
+        s (str): The modified UTF-7 encoded string.
+
+    Returns:
+        str: The decoded original string.
+    """
+    r = []
+    if s.find('&-') != -1:
+        s = s.split('&-')
+        i = len(s)
+        for subs in s:
+            i -= 1
+            r.append(decode_imap4_utf7(subs))
+            if i != 0:
+                r.append('&')
+    else:
+        regex = re.compile(r'[&]\S+?[-]')
+        sym = re.split(regex, s)
+        if len(regex.findall(s)) > 1:
+            i = 0
+            r.append(sym[i])
+            for subs in regex.findall(s):
+                r.append(decode_imap4_utf7(subs))
+                i += 1
+                r.append(sym[i])
+        elif len(regex.findall(s)) == 1:
+            r.append(sym[0])
+            r.append(modified_unbase64(regex.findall(s)[0][1:-1]))
+            r.append(sym[1])
+        else:
+            r.append(s)
+    return ''.join(r)

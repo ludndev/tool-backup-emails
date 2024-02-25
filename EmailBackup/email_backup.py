@@ -65,8 +65,7 @@ class EmailBackup:
             _, data = self.imap_conn.fetch(mail_id, '(RFC822)')
             email_message = BytesParser().parsebytes(data[0][1])
             message_hash = hashlib.sha1(email_message.as_string().encode()).hexdigest()
-            timestamp = parse_date(email_message.get("Date"))
-            filename = f'{mail_id}_{timestamp}_{message_hash}.eml'
+            filename = f'{mail_id}_{message_hash}.eml'
             filename = "".join(x for x in filename if x.isalnum() or x in "_-.")
 
             with open(os.path.join(storage_name, filename), 'wb') as f:

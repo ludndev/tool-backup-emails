@@ -64,7 +64,7 @@ class EmailBackup:
         try:
             _, data = self.imap_conn.fetch(mail_id, '(RFC822)')
             email_message = BytesParser().parsebytes(data[0][1])
-            message_hash = hashlib.sha1(email_message.as_string().encode()).hexdigest()
+            message_hash = hashlib.sha1(email_message.as_string().encode('utf8','surrogateescape')).hexdigest()
             filename = f'{mail_id}_{message_hash}.eml'
             filename = "".join(x for x in filename if x.isalnum() or x in "_-.")
 

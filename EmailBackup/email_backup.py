@@ -5,7 +5,7 @@ import zipfile
 from email.parser import BytesParser
 
 from tqdm import tqdm
-from EmailBackup.utils import create_backup_folder, get_dir_size, zip_into_part, zip_files, parse_date
+from EmailBackup.utils import create_backup_folder, get_dir_size, zip_into_part, zip_files, decode_imap4_utf7
 
 
 class EmailBackup:
@@ -91,7 +91,8 @@ class EmailBackup:
         """
         self.connect_to_mailbox(email, password, server, port)
         for folder in self.get_mailbox_folders():
-            folder_name = folder.decode().split(' "." ')[-1].strip('"')
+            folder_name_utf7 = folder.decode().split(' "." ')[-1].strip('"')
+            folder_name = decode_imap4_utf7(folder_name_utf7)
             storage_name = create_backup_folder(email, folder_name)
             mail_ids = self.get_mail_ids(folder_name)
             progress = tqdm(total=len(mail_ids), desc=f'Processing : {folder_name}')
